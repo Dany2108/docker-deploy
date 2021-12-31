@@ -7,7 +7,15 @@ if [ "$1" == "--create" ]; then
     nb_machine=1
     [ "$2" != "" ] && nb_machine=$2
 
-    for i in $(seq 1 $nb_machine);do
+    last_id=`docker ps -a --format '{{ .Names }}' | awk -F "-" -v user=$USER '$0 ~ user"-alpine" {print $3}' | sort -r | head -1`
+    echo "le dernier ID est $last_id"
+    last_id2=$(($last_id + 1))
+     echo "le prochain ID est $last_id2"
+    nb_machine=$(($nb_machine + $last_id + 1))
+   
+
+    for ((i=$last_id2; i<$nb_machine; i++))
+    do
     docker run -tid --name $USER-alpine-$i alpine:latest
     echo "Machine N°$i crée"
     done
